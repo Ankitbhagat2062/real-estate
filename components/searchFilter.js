@@ -18,17 +18,12 @@ import {
   Portal
 } from '@chakra-ui/react';
 import { FaSearch } from 'react-icons/fa'; // Adjust icons as needed
-import { searchFilters } from '@/lib/constant';
 import { OPTIONS, FILTER_GROUPS } from '@/lib/constant';
 import { LuChevronDown } from 'react-icons/lu';
 
 const SearchFilter = ({ initialFilters = {}, onFilterChange = () => { }, ...props }) => {
-  const [filters, setFilters] = useState(searchFilters);
+  const [filters, setFilters] = useState(initialFilters);
 
-  useEffect(() => {
-    setFilters(prev => ({ ...prev, ...initialFilters }));
-    // const result = new URLSearchParams(filters).toString()
-  }, [initialFilters]);
   const handleChange = useCallback((key, value) => {
     setFilters(prev => {
       const newFilters = { ...prev, [key]: value };
@@ -104,7 +99,7 @@ const SearchFilter = ({ initialFilters = {}, onFilterChange = () => { }, ...prop
         <HStack gap="2">
           <NumberInput.Root
             flex="1"
-            min={0}
+            min={0} 
             value={value?.toString() || ""}
             onValueChange={(details) => handleChange(filterKey, details.value)}
           >

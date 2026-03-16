@@ -134,7 +134,7 @@ const Search = () => {
 
             <Breadcrumb.Item>
               <Breadcrumb.CurrentLink>
-                {region_id || 'Search'}
+                {searchParams.region_id || 'Search'}
               </Breadcrumb.CurrentLink>
             </Breadcrumb.Item>
           </Breadcrumb.List>
