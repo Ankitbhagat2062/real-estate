@@ -1,7 +1,7 @@
 "use client"
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'next/navigation';
-import React from 'react';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Container,
@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { Button } from '@chakra-ui/react';
 import NProgress from 'nprogress';
-import { MdLocationOn, MdFilterList, MdOutlinePriceCheck } from 'react-icons/md';
+import { MdLocationOn } from 'react-icons/md';
 import Link from 'next/link';
 
 import { Toaster, toaster } from "@/components/ui/toaster"
@@ -28,16 +28,19 @@ import SearchFilter from '@/components/searchFilter';
 
 const Search = () => {
   const params = useParams();
-  const { status, uipt, region_id, region_type, sf } = params;
-  // Merge params into filters
-  const currentFilters = {
-    ...searchFilters,
-    ...(status && { status }),
-    ...(uipt && { uipt }),
-    ...(region_id && { region_id }),
-    ...(region_type && { region_type }),
-    ...(sf && { sf }),
-  };
+  const router = useRouter()
+  const searchParams = useSearchParams();
+
+  const searchParamsObj = Object.fromEntries(searchParams.entries());
+  const initialFilters = { ...searchParamsObj };
+
+  const [currentFilters, setCurrentFilters] = useState(initialFilters);
+
+  // Sync state with URL changes (back/forward)
+  useEffect(() => {
+    const newFilters = { ...searchParamsObj };
+    setCurrentFilters(newFilters);
+  }, [searchParamsObj]);
 
   const queryKey = ['properties', currentFilters];
 
@@ -46,8 +49,19 @@ const Search = () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     NProgress.start();
     try {
-      const queryStr = new URLSearchParams(currentFilters).toString();
-      const data = await fetchApi(`${baseUrl}/properties/list?status=${currentFilters.status}&uuip=${currentFilters.uuipt}&region_type=${currentFilters.region_type}&region_id=${currentFilters.region_id}&sf=${currentFilters.sf}&num_homes=25`);
+      const queryObj = {
+        status: currentFilters.status,
+        uipt: currentFilters.uipt,
+        region_type: currentFilters.region_type,
+        region_id: currentFilters.region_id,
+        sf: currentFilters.sf,
+      };
+      const queryStr = new URLSearchParams(
+        Object.fromEntries(Object.entries(queryObj).filter(([, v]) => v))
+      ).toString();
+      const data = await fetchApi(`${baseUrl}/properties/list?${queryStr}&num_homes=25`);
+
+      // Fixed: Dynamic essential params only, skips undefined, corrected API param name to 'uipt'
       return data?.homes || [];
     } finally {
       NProgress.done();
@@ -58,7 +72,7 @@ const Search = () => {
     queryKey,
     queryFn: () => fetchProperties(currentFilters),
     staleTime: 1000 * 60 * 5,
-    cacheTime: 1000 * 60 * 30,
+    gcTime: 1000 * 60 * 30,
     onError: (err) => {
       toaster.create({
         title: 'Error loading properties',
@@ -68,6 +82,24 @@ const Search = () => {
       });
     },
   });
+
+  const updateURL = useCallback((filters) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== '' && value !== undefined && value !== null && value !== searchFilters[key]) {
+        params.set(key, String(value));
+      } else {
+        params.delete(key);
+      }
+    });
+    const queryString = params.toString();
+    router.replace(queryString ? `?${queryString}` : '/search', { scroll: false });
+  }, [router, searchParams]);
+
+  const handleFiltersChange = useCallback((newFilters) => {
+    setCurrentFilters(newFilters);
+    updateURL(newFilters);
+  }, [updateURL]);
 
   if (isError) {
     return (
@@ -84,7 +116,6 @@ const Search = () => {
       </>
     );
   }
-  // console.log(properties , currentFilters.status);
   return (
     <Box bg={'gray.50'} _dark={{ bg: 'gray.900' }} minH="100vh" py={12}>
       <Container maxW="7xl">
@@ -119,38 +150,10 @@ const Search = () => {
           Found {properties.length} properties matching your search
         </Text>
 
-        {/* Filters Chips */}
-        <HStack wrap="wrap" spacing={2} mb={12} p={4} bg="white" rounded="xl" shadow="md">
-          <Tag.Root size="lg" variant="subtle">
-            <Tag.StartElement>
-              <MdFilterList />
-            </Tag.StartElement>
-            <Tag.Label>Status: {status || searchFilters.status}</Tag.Label>
-          </Tag.Root>
-
-          <Tag.Root size="lg" variant="subtle">
-            <Tag.Label>Property Types: {uipt || searchFilters.uipt}</Tag.Label>
-          </Tag.Root>
-
-          <Tag.Root size="lg" variant="subtle">
-            <Tag.Label>Sources: {sf || searchFilters.sf}</Tag.Label>
-          </Tag.Root>
-
-          <Tag.Root size="lg" variant="subtle">
-            <Tag.Label>
-              Price: ${searchFilters.min_price || 'Any'} - ${searchFilters.max_price || 'Any'}
-            </Tag.Label>
-          </Tag.Root>
-
-          <Tag.Root size="lg" variant="subtle">
-            <Tag.StartElement>
-              <MdOutlinePriceCheck />
-            </Tag.StartElement>
-            <Tag.Label>Beds: {searchFilters.num_beds || 'Any'}+</Tag.Label>
-          </Tag.Root>
-        </HStack>
-
-        <SearchFilter />
+        <SearchFilter
+          initialFilters={currentFilters}
+          onFilterChange={handleFiltersChange}
+        />
 
         {/* Properties Grid */}
         {isLoading ? (
@@ -166,8 +169,8 @@ const Search = () => {
             <Button as={Link} href="/" colorScheme="blue">Browse All Homes</Button>
           </VStack>
         ) : (
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} gap={'10px'} spacing={8}>
-            {properties.map((property ,i) => (
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} m={'10px'} gap={'10px'} spacing={8}>
+            {properties.map((property, i) => (
               <Property key={i} property={property.homeData} />
             ))}
           </SimpleGrid>

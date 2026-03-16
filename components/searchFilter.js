@@ -4,7 +4,6 @@ import {
   HStack,
   Select,
   NumberInput,
-  NumberInputField,
   Switch,
   CheckboxGroup,
   Checkbox,
@@ -28,13 +27,15 @@ const SearchFilter = ({ initialFilters = {}, onFilterChange = () => { }, ...prop
 
   useEffect(() => {
     setFilters(prev => ({ ...prev, ...initialFilters }));
+    // const result = new URLSearchParams(filters).toString()
   }, [initialFilters]);
-
   const handleChange = useCallback((key, value) => {
-    const newFilters = { ...filters, [key]: value };
-    setFilters(newFilters);
-    onFilterChange(newFilters);
-  }, [filters, onFilterChange]);
+    setFilters(prev => {
+      const newFilters = { ...prev, [key]: value };
+      onFilterChange(newFilters);
+      return newFilters;
+    });
+  }, [onFilterChange]);
 
   const renderInput = (filterKey) => {
     const value = filters[filterKey];
