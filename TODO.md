@@ -1,9 +1,18 @@
-# TODO - Fix Chakra UI Card Error
+# README Update Task - ✅ COMPLETE
 
 ## Steps:
-- [x] Step 1: Check if @chakra-ui/react-components is installed (check package.json)
-- [x] Step 2: Install @chakra-ui/react-components if missing  
-- [x] Step 3: Update components/Property.js - Fix Card imports
-- [x] Step 4: Fix components/ui/provider.js - Remove invalid prop
-- [x] Step 5: Test the application (npm run dev)
-- [x] Step 6: Verify Property cards render correctly
+- [x] Create TODO.md with plan steps
+- [x] Update README.md:
+  - Add project title & description
+  - Add features section
+  - Add clone & setup instructions (git clone, npm install, RapidAPI key setup, npm run dev)
+  - Add project structure overview
+  - Add API usage notes
+  - Polish with badges/Markdown
+- [x] Test: Run `npm run dev`
+- [x] Git commit changes
+
+All steps completed. README.md updated with RapidAPI (Apidojo/unofficial-redfin) details, setup, features, etc.
+
+You can now run `npm run dev` to view the app and check the new README.md.
+

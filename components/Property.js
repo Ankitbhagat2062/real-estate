@@ -17,14 +17,13 @@ import { Card } from '@chakra-ui/react'
 import { FaBed, FaBath, FaRulerCombined, FaMapMarkerAlt } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 import millify from 'millify'
-import { useColorModeValue } from '@chakra-ui/color-mode'
 import { getBackgroundImageUrl, getImageUrl } from '@/lib/constant'
 import Link from 'next/link'
 
 const Property = ({ property }) => {
-  !property?.photosInfo?.photoRanges && console.log(`hello`);
   const images = Array.from({ length: property.photosInfo?.photoRanges ? property.photosInfo.photoRanges[0]?.endPos : 0 }, (_, i) => getImageUrl(property, i))
   const bgImage = getBackgroundImageUrl(property);
+  console.log(bgImage);
   const primaryImage = images[0]
   const price = property.priceInfo?.homePrice?.int64Value?.toLocaleString() || 'N/A'
   const beds = property.beds?.value || 0
