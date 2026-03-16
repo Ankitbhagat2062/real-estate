@@ -17,8 +17,7 @@ import 'react-horizontal-scrolling-menu/dist/styles.css'
 import { LuMoveLeft, LuMoveRight } from 'react-icons/lu'
 
 import { baseUrl, fetchApi } from '@/utils/fetchApi'
-import { useColorModeValue } from '@chakra-ui/color-mode'
-import { getBackgroundImageUrl } from '@/utils/searchFilters'
+import { getBackgroundImageUrl } from '@/lib/constant'
 const MotionBox = motion.create(Box)
 const MotionVStack = motion.create(VStack)
 const fadeInUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } }
