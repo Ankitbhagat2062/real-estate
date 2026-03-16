@@ -33,7 +33,6 @@ const Property = ({ property }) => {
   const address = `${property.addressInfo?.formattedStreetLine}, ${property.addressInfo?.city}, ${property.addressInfo?.state} ${property.addressInfo?.zip}`
   const yearBuilt = property.yearBuilt?.yearBuilt?.value || 'N/A'
   const dom = property.daysOnMarket?.daysOnMarket?.daysOnMarket?.value || 0
-  const color = useColorModeValue("gray.800", "white");
   return (
     <Link href={`/property/${property?.propertyId}?listingId=${property?.listingId.value}`}>
       <Card.Root maxW="sm" minW="300px" mx="auto" boxShadow="xl" borderRadius="xl" overflow="hidden" 
@@ -73,7 +72,7 @@ const Property = ({ property }) => {
           </HStack>
 
           {/* Address */}
-          <Heading size="lg" mb={2} color={`${color}`}>
+          <Heading size="lg" mb={2} color={`gray.800`} _dark={{color:'white'}}>
             <Icon as={FaMapMarkerAlt} boxSize={5} color="red.500" mb={1} display="block" />
             {address}
           </Heading>
