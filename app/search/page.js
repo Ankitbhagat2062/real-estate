@@ -1,7 +1,7 @@
 "use client"
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import {
   Box,
   Container,
@@ -26,7 +26,7 @@ import Property from '@/components/Property';
 import { searchFilters } from '@/lib/constant';
 import SearchFilter from '@/components/searchFilter';
 
-const Search = () => {
+const SearchContent = () => {
   const params = useParams();
   const router = useRouter()
   const searchParams = useSearchParams();
@@ -179,5 +179,19 @@ const Search = () => {
     </Box>
   );
 };
+
+const Search = () => (
+  <Suspense fallback={
+    <Container maxW="7xl" py={20}>
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing={8}>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <Skeleton key={i} height="400px" rounded="3xl" />
+        ))}
+      </SimpleGrid>
+    </Container>
+  }>
+    <SearchContent />
+  </Suspense>
+);
 
 export default Search
