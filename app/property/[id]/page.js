@@ -18,7 +18,6 @@ import { LuMoveLeft, LuMoveRight } from 'react-icons/lu'
 
 import { baseUrl, fetchApi } from '@/utils/fetchApi'
 import { useColorModeValue } from '@chakra-ui/color-mode'
-import { property_details } from '@/lib/constant'
 import { getBackgroundImageUrl } from '@/utils/searchFilters'
 const MotionBox = motion.create(Box)
 const MotionVStack = motion.create(VStack)
@@ -78,7 +77,7 @@ const PropertyDetailsPage = () => {
     enabled: !!id
   })
   
-  const property = data || property_details
+  const property = data || {}
   const { mainHouseInfo = {}, mediaBrowserInfo = {}, openHouseInfo = {} } = property
   const { propertyAddress = {}, selectedAmenities = [], marketingRemarks = [], listingAgents = [] } = mainHouseInfo
   const agent = listingAgents[0] || {}

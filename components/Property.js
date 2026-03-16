@@ -18,7 +18,7 @@ import { FaBed, FaBath, FaRulerCombined, FaMapMarkerAlt } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 import millify from 'millify'
 import { useColorModeValue } from '@chakra-ui/color-mode'
-import { getBackgroundImageUrl, getImageUrl } from '@/utils/searchFilters'
+import { getBackgroundImageUrl, getImageUrl } from '@/lib/constant'
 import Link from 'next/link'
 
 const Property = ({ property }) => {
